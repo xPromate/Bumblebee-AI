@@ -1,13 +1,15 @@
 package samples;
 
-import com.sun.javaws.exceptions.InvalidArgumentException;
+import impl.Path;
 import interf.IUIConfiguration;
 import maps.Maps;
 import viewer.PathViewer;
 import impl.Point;
 import interf.IPoint;
 
+import java.awt.*;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -24,12 +26,29 @@ public class PathDrawingSample
 
         List<IPoint> points = new ArrayList<>();
         points.add(conf.getStart());
-        points.add(new Point(200,200));
-        points.add(new Point(250,500));
+        points.add(new Point(280,300));
+        //points.add(new Point(250,500));
         points.add(new Point(300,350));
         points.add(conf.getEnd());
 
         PathViewer pv = new PathViewer(conf);
+
+        //System.out.println(conf.getObstacles());
+
+
+
+        System.out.println(conf.getHeight());
+        System.out.println(conf.getWidth());
+
+        Iterator it =  conf.getObstacles().iterator();
+
+        while(it.hasNext()){
+            System.out.println(it.next());
+        }
+
+        //System.out.println(rectangles.get(1).contains(280,300));
+        //rectangles.get(1).getLocation();
+
 
         pv.setFitness(9999);
         pv.setStringPath("(ponto1, ponto2, bla bla bla...)");
