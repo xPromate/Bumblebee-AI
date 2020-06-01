@@ -36,7 +36,6 @@ public class Cromossoma implements Comparable<Cromossoma>{
         }
     }
 
-
     public Cromossoma(Point start, Point end, int maxMapHeight, int maxMapWidth) {
         this.start = start;
         this.end = end;
@@ -58,8 +57,6 @@ public class Cromossoma implements Comparable<Cromossoma>{
         this.maxMapHeight = other.maxMapHeight;
         this.maxMapWidth = other.maxMapWidth;
     }
-
-
 
     public int getFitness() {
         return 0;
@@ -122,6 +119,12 @@ public class Cromossoma implements Comparable<Cromossoma>{
 
         return count;
     }
+
+    //pode ser adicionado ao checkALLColisions e altera lo para fitness
+    private double distanceBetween(int startX,int startY, int endX, int endY){
+        return Math.sqrt(Math.pow(startX-endX,2) + Math.pow(startY-endY,2));
+    }
+
 
 
 }
