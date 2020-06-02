@@ -46,6 +46,7 @@ public class Cromossoma implements Comparable<Cromossoma> {
 
     public Cromossoma mutate(Cromossoma other) {
 
+        //meto aqui uma das funções de mutate q quiser
         return null;
     }
 
@@ -65,21 +66,21 @@ public class Cromossoma implements Comparable<Cromossoma> {
 
         int j = 0;
 
-        while(j < otherPathListLength/2) {
+        while (j < otherPathListLength / 2) {
             other.path.set(i, thisCromossoma.path.get(i));
             j++;
         }
 
         int k = thisPathListLength;
 
-        while(k < this.path.size() && k < other.path.size()){
+        while (k < this.path.size() && k < other.path.size()) {
             this.path.set(k, other.path.get(k));
             k++;
         }
 
         int z = otherPathListLength;
 
-        while(z < other.path.size() && z < thisCromossoma.path.size()){
+        while (z < other.path.size() && z < thisCromossoma.path.size()) {
             other.path.set(z, thisCromossoma.path.get(z));
             z++;
         }
@@ -104,51 +105,45 @@ public class Cromossoma implements Comparable<Cromossoma> {
         this.rectangles = other.rectangles;
     }
 
-    public int getFitness() {
-
-        int fitness = 0;
 
 
-
-        return fitness;
-    }
-
-    public Cromossoma mutateRandom(){
+    public Cromossoma mutateRandom() {
 
         Random r = new Random();
         float random = (float) Math.random();
 
-        if(random <= 0.25){ //muda caminho ao inicio
+        if (random <= 0.25) { //muda caminho ao inicio
 
-            int x = randomNum(1,this.path.size());
+            int x = randomNum(1, this.path.size());
 
-            this.path.set(0, new Point(this.start.getX(),this.start.getY()));
+            this.path.set(0, new Point(this.start.getX(), this.start.getY()));
 
-            for(int i = 1 ; i < x  ; i++ ){
-                this.path.add(i, new Point(randomNum(0,this.maxMapHeight),randomNum(0,this.maxMapWidth)));
+            for (int i = 1; i < x; i++) {
+                this.path.add(i, new Point(randomNum(0, this.maxMapHeight), randomNum(0, this.maxMapWidth)));
             }
 
-        } else if (random <= 0.5){ //muda caminho ao fim
+        } else if (random <= 0.5) { //muda caminho ao fim
 
-            int x = randomNum(1,this.path.size());
+            int x = randomNum(1, this.path.size());
 
-            for(int i = x ; i < this.path.size()  ; i++ ){
-                this.path.add(i, new Point(randomNum(0,this.maxMapHeight),randomNum(0,this.maxMapWidth)));
+
+            for (int i = x; i < this.path.size(); i++) {
+                this.path.set(i, new Point(randomNum(0, this.maxMapHeight), randomNum(0, this.maxMapWidth)));
             }
 
-            this.path.add(new Point(this.end.getX(),this.end.getY()));
+            this.path.add(new Point(this.end.getX(), this.end.getY()));
 
-        }else if (random <= 0.75){ //retira caminho no inicio
+        } else if (random <= 0.75) { //retira caminho no inicio
 
-            int x = randomNum(1, this.path.size()-1);
+            int x = randomNum(1, this.path.size() - 1);
 
-            this.path.set(0, new Point(this.start.getX(),this.start.getY()));
-
-            for(int  i = 1 ; i < x ; i++){
-                this.path.remove(i);
+            for (int i = 0; i < x; i++) {
+                this.path.remove(0); //remover a priemira posição sempre
             }
 
-        }else { //retira caminho no fim
+            this.path.set(0, new Point(this.start.getX(), this.start.getY()));
+
+        } else { //retira caminho no fim
 
             int x = randomNum(1, this.path.size() - 1);
 
@@ -162,40 +157,40 @@ public class Cromossoma implements Comparable<Cromossoma> {
         return this;
     }
 
-    public Cromossoma mutateByWorstPiece(){
+    public Cromossoma mutateByWorstPiece() {
         int half = (int) Math.ceil(this.path.size() / 2);
         int firstHalf = 0;
         int secondHalf = 0;
 
-        for(int i = 0 ; i < this.path.size() ; i++){
-            if( i < half){
-                int value = checkColision(this.path.get(i).getX(), this.path.get(i).getY(),this.path.get(i+1).getX(), this.path.get(i+1).getY());
-                if(value > 0){
+        for (int i = 0; i < this.path.size(); i++) {
+            if (i < half) {
+                int value = checkColision(this.path.get(i).getX(), this.path.get(i).getY(), this.path.get(i + 1).getX(), this.path.get(i + 1).getY());
+                if (value > 0) {
                     firstHalf += value;
                 }
-            }else{
-                if(!(i == this.path.size()-1)){
-                    int value = checkColision(this.path.get(i).getX(), this.path.get(i).getY(),this.path.get(i+1).getX(), this.path.get(i+1).getY());
+            } else {
+                if (!(i == this.path.size() - 1)) {
+                    int value = checkColision(this.path.get(i).getX(), this.path.get(i).getY(), this.path.get(i + 1).getX(), this.path.get(i + 1).getY());
 
-                    if(value > 0){
+                    if (value > 0) {
                         secondHalf += value;
                     }
                 }
             }
         }
 
-        System.out.println(firstHalf + " " + secondHalf );
+        System.out.println(firstHalf + " " + secondHalf);
 
-        if (firstHalf > secondHalf){
-            this.path.set(0, new Point(this.start.getX(),this.start.getY()));
-            for(int j = 1 ; j < half ; j++){
-                this.path.set(j, new Point(this.randomNum(0,this.maxMapWidth),this.randomNum(0,this.maxMapHeight)));
+        if (firstHalf > secondHalf) {
+            this.path.set(0, new Point(this.start.getX(), this.start.getY()));
+            for (int j = 1; j < half; j++) {
+                this.path.set(j, new Point(this.randomNum(0, this.maxMapWidth), this.randomNum(0, this.maxMapHeight)));
             }
-        }else{
-            for(int j = half ; j < this.path.size() ; j++){
-                this.path.set(j, new Point(this.randomNum(0,this.maxMapWidth),this.randomNum(0,this.maxMapHeight)));
+        } else {
+            for (int j = half; j < this.path.size(); j++) {
+                this.path.set(j, new Point(this.randomNum(0, this.maxMapWidth), this.randomNum(0, this.maxMapHeight)));
             }
-            this.path.add(new Point(this.end.getX(),this.end.getY()));
+            this.path.add(new Point(this.end.getX(), this.end.getY()));
         }
 
         return this;
@@ -212,7 +207,7 @@ public class Cromossoma implements Comparable<Cromossoma> {
 
         int x = randomNum(1, 18);
         this.path.add(new Point(this.start.getX(), this.start.getY()));
-        for (int i = 0; i < 2; i++) {
+        for (int i = 0; i < x; i++) {
             path.add(new Point(randomNum(0, this.maxMapWidth), randomNum(0, this.maxMapHeight)));
         }
         this.path.add(new Point(this.end.getX(), this.end.getY()));
@@ -245,24 +240,26 @@ public class Cromossoma implements Comparable<Cromossoma> {
         return count;
     }
 
-    public int checkALLColisions() {
+    public double getFitness() {
 
         Iterator it = this.path.iterator();
         Point current = (Point) it.next();
         Point next;
         int count = 0;
+        double distance = 0;
 
         while (it.hasNext()) {
             next = current;
             current = (Point) it.next();
             int value = checkColision(current.getX(), current.getY(), next.getX(), next.getY());
+            distance += distanceBetween(current.getX(), current.getY(), next.getX(), next.getY());
 
             if (value > 0) {
                 count += value;
             }
         }
 
-        return count;
+        return count*100000 + distance + this.path.size()*100;
     }
 
     //pode ser adicionado ao checkALLColisions e altera lo para fitness

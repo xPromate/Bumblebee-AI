@@ -26,7 +26,7 @@ public class Main {
 
         pv.setFitness(9999);
         pv.setStringPath("(ponto1, ponto2, bla bla bla...)");
-        c1.mutateRandom();
+        c1.mutateByWorstPiece();
         pv.paintPath(c1.getPath());
 
         System.out.println(c1.checkALLColisions());
