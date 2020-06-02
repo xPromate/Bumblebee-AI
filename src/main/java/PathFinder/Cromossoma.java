@@ -18,7 +18,7 @@ public class Cromossoma implements Comparable<Cromossoma> {
 
     private Point start;
     private Point end;
-    private List<Point> path;
+    private List<IPoint> path;
     private final int maxPathSize = 20;
     private int maxMapHeight;
     private int maxMapWidth;
@@ -28,18 +28,18 @@ public class Cromossoma implements Comparable<Cromossoma> {
 
     static {
         try {
-            conf = Maps.getMap(9);
+            conf = Maps.getMap(6);
         } catch (Exception e) {
-            e.printStackTrace();
+            System.out.println(e);
         }
     }
 
-    public Cromossoma(Point start, Point end, int maxMapHeight, int maxMapWidth) {
-        this.start = start;
-        this.end = end;
+    public Cromossoma() {
+        this.start = new Point(conf.getStart().getX(), conf.getStart().getY());
+        this.end = new Point(conf.getEnd().getX(), conf.getEnd().getY());
         this.path = new ArrayList<>(this.maxPathSize);
-        this.maxMapHeight = maxMapHeight;
-        this.maxMapWidth = maxMapWidth;
+        this.maxMapHeight = conf.getHeight();
+        this.maxMapWidth = conf.getWidth();
         this.putSomePoints();
         rectangles = conf.getObstacles();
     }
@@ -96,7 +96,7 @@ public class Cromossoma implements Comparable<Cromossoma> {
         this.end = new Point(other.end.getX(), other.end.getY());
         this.path = new LinkedList<>();
 
-        for (Point p : other.path) {
+        for (IPoint p : other.path) {
             this.path.add(new Point(p.getX(), p.getY())); //deep copy
         }
         this.maxMapHeight = other.maxMapHeight;
@@ -204,10 +204,12 @@ public class Cromossoma implements Comparable<Cromossoma> {
 
         int x = randomNum(1, 18);
         this.path.add(new Point(this.start.getX(), this.start.getY()));
-        for (int i = 0; i < x; i++) {
+        for (int i = 0; i < 2; i++) {
             path.add(new Point(randomNum(0, this.maxMapWidth), randomNum(0, this.maxMapHeight)));
         }
         this.path.add(new Point(this.end.getX(), this.end.getY()));
+
+        System.out.println(this.path.toString());
     }
 
 
@@ -233,7 +235,7 @@ public class Cromossoma implements Comparable<Cromossoma> {
         return false;
     }
 
-    private int checkALLColisions() {
+    public int checkALLColisions() {
 
         Iterator it = this.path.iterator();
         Point current = (Point) it.next();
@@ -254,6 +256,10 @@ public class Cromossoma implements Comparable<Cromossoma> {
     //pode ser adicionado ao checkALLColisions e altera lo para fitness
     private double distanceBetween(int startX, int startY, int endX, int endY) {
         return Math.sqrt(Math.pow(startX - endX, 2) + Math.pow(startY - endY, 2));
+    }
+
+    public List<IPoint> getPath() {
+        return path;
     }
 
     @Override

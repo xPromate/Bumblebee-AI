@@ -19,37 +19,19 @@ public class Main {
 
     public static void main(String[] args) throws Exception {
 
-        //conf = Maps.getMap(6);
+        Cromossoma c1 = new Cromossoma();
+        //Cromossoma c2 = new Cromossoma();
 
-        //PathViewer pv = new PathViewer(conf);
+        PathViewer pv = new PathViewer(c1.conf);
 
-        //Obstacle obs = new Obstacle(conf.getObstacles().get(0));
+        pv.setFitness(9999);
+        pv.setStringPath("(ponto1, ponto2, bla bla bla...)");
+        pv.paintPath(c1.getPath());
 
-        //System.out.println(obs.toString());
+        System.out.println(c1.checkALLColisions());
 
-        //Point p = new Point(109,316);
+        Thread.sleep(5000);
 
-        //System.out.println(obs.colision(p));
 
-        Point p1 = new Point(100, 300);
-        Point p2 = new Point(200, 400);
-
-        Point p3 = new Point(50, 100);
-        Point p4 = new Point(100, 150);
-
-        Cromossoma c1 = new Cromossoma(p1, p2, 100, 200);
-        Cromossoma c2 = new Cromossoma(p3, p4, 100, 200);
-
-        System.out.println("Path cromossoma 1: " + c1.toString());
-        System.out.println("Path cromossoma 2: " + c2.toString());
-
-        c1.mutateByWorstPiece();
-
-        System.out.println("Mutated: " + c1.toString());
-
-        //c1.cross(c2);
-
-        //System.out.println("Path cross cromossoma 1: " + c1.toString());
-        //System.out.println("Path cross cromossoma 2: " + c2.toString());
     }
 }
