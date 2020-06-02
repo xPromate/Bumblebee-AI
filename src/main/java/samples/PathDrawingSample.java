@@ -22,7 +22,7 @@ public class PathDrawingSample
     public static void main(String args[]) throws Exception {
 
 
-        conf = Maps.getMap(6);
+        conf = Maps.getMap(9);
 
         List<IPoint> points = new ArrayList<>();
         points.add(conf.getStart());

@@ -28,7 +28,7 @@ public class Cromossoma implements Comparable<Cromossoma> {
 
     static {
         try {
-            conf = Maps.getMap(6);
+            conf = Maps.getMap(9);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -105,7 +105,12 @@ public class Cromossoma implements Comparable<Cromossoma> {
     }
 
     public int getFitness() {
-        return 0;
+
+        int fitness = 0;
+
+
+
+        return fitness;
     }
 
     public Cromossoma mutateRandom(){
@@ -156,6 +161,7 @@ public class Cromossoma implements Comparable<Cromossoma> {
         int firstHalf = 0;
         int secondHalf = 0;
 
+
         for(int i = 0 ; i < this.path.size() ; i++){
             if( i < half){
                 if( checkColision(this.path.get(i).getX(), this.path.get(i).getY(),this.path.get(i+1).getX(), this.path.get(i+1).getY()) ){
@@ -170,14 +176,18 @@ public class Cromossoma implements Comparable<Cromossoma> {
             }
         }
 
+        System.out.println(firstHalf + " " + secondHalf );
+
         if (firstHalf > secondHalf){
-            for(int j = 0 ; j < half ; j++){
-                this.path.add(j, new Point(this.randomNum(0,this.maxMapWidth),this.randomNum(0,this.maxMapHeight)));
+            this.path.set(0, new Point(this.start.getX(),this.start.getY()));
+            for(int j = 1 ; j < half ; j++){
+                this.path.set(j, new Point(this.randomNum(0,this.maxMapWidth),this.randomNum(0,this.maxMapHeight)));
             }
         }else{
             for(int j = half ; j < this.path.size() ; j++){
-                this.path.add(j, new Point(this.randomNum(0,this.maxMapWidth),this.randomNum(0,this.maxMapHeight)));
+                this.path.set(j, new Point(this.randomNum(0,this.maxMapWidth),this.randomNum(0,this.maxMapHeight)));
             }
+            this.path.add(new Point(this.end.getX(),this.end.getY()));
         }
 
         return this;
