@@ -122,7 +122,9 @@ public class Cromossoma implements Comparable<Cromossoma> {
 
             int x = randomNum(1,this.path.size());
 
-            for(int i = 0 ; i < x  ; i++ ){
+            this.path.set(0, new Point(this.start.getX(),this.start.getY()));
+
+            for(int i = 1 ; i < x  ; i++ ){
                 this.path.add(i, new Point(randomNum(0,this.maxMapHeight),randomNum(0,this.maxMapWidth)));
             }
 
@@ -134,26 +136,30 @@ public class Cromossoma implements Comparable<Cromossoma> {
                 this.path.add(i, new Point(randomNum(0,this.maxMapHeight),randomNum(0,this.maxMapWidth)));
             }
 
+            this.path.add(new Point(this.end.getX(),this.end.getY()));
+
         }else if (random <= 0.75){ //retira caminho no inicio
 
             int x = randomNum(1, this.path.size()-1);
 
-            for(int  i = 0 ; i < x ; i++){
+            this.path.set(0, new Point(this.start.getX(),this.start.getY()));
+
+            for(int  i = 1 ; i < x ; i++){
                 this.path.remove(i);
             }
 
-        }else{ //retira caminho no fim
+        }else { //retira caminho no fim
 
-            int x = randomNum(1, this.path.size()-1);
+            int x = randomNum(1, this.path.size() - 1);
 
-            for(int  i = x ; i < path.size() ; i++){
+            for (int i = x; i < path.size(); i++) {
                 this.path.remove(i);
             }
 
+            this.path.add(new Point(this.end.getX(), this.end.getY()));
         }
 
         return this;
-
     }
 
     public Cromossoma mutateByWorstPiece(){
