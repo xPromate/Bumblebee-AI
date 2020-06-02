@@ -251,12 +251,9 @@ public class Cromossoma implements Comparable<Cromossoma> {
         while (it.hasNext()) {
             next = current;
             current = (Point) it.next();
-            int value = checkColision(current.getX(), current.getY(), next.getX(), next.getY());
+            
             distance += distanceBetween(current.getX(), current.getY(), next.getX(), next.getY());
-
-            if (value > 0) {
-                count += value;
-            }
+            count += checkColision(current.getX(), current.getY(), next.getX(), next.getY());
         }
 
         return count*100000 + distance + this.path.size()*100;
