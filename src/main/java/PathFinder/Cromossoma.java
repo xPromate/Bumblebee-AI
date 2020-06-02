@@ -151,8 +151,37 @@ public class Cromossoma implements Comparable<Cromossoma> {
 
     }
 
-    //public Cromossoma mutateByWorstPiece(){
-    //}
+    public Cromossoma mutateByWorstPiece(){
+        int half = (int) Math.ceil(this.path.size() / 2);
+        int firstHalf = 0;
+        int secondHalf = 0;
+
+        for(int i = 0 ; i < this.path.size() ; i++){
+            if( i < half){
+                if( checkColision(this.path.get(i).getX(), this.path.get(i).getY(),this.path.get(i+1).getX(), this.path.get(i+1).getY()) ){
+                    firstHalf++;
+                }
+            }else{
+                if(!(i == this.path.size()-1)){
+                    if( checkColision(this.path.get(i).getX(), this.path.get(i).getY(),this.path.get(i+1).getX(), this.path.get(i+1).getY()) ){
+                        secondHalf++;
+                    }
+                }
+            }
+        }
+
+        if (firstHalf > secondHalf){
+            for(int j = 0 ; j < half ; j++){
+                this.path.add(j, new Point(this.randomNum(0,this.maxMapWidth),this.randomNum(0,this.maxMapHeight)));
+            }
+        }else{
+            for(int j = half ; j < this.path.size() ; j++){
+                this.path.add(j, new Point(this.randomNum(0,this.maxMapWidth),this.randomNum(0,this.maxMapHeight)));
+            }
+        }
+
+        return this;
+    }
 
     private int randomNum(int min, int max) {
         Random rand = new Random();
