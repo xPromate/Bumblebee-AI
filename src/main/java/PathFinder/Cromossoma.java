@@ -44,10 +44,10 @@ public class Cromossoma implements Comparable<Cromossoma> {
         rectangles = conf.getObstacles();
     }
 
-    public Cromossoma mutate(Cromossoma other) {
+    public Cromossoma mutate() {
 
         //meto aqui uma das funções de mutate q quiser
-        return null;
+        return mutateRandom();
     }
 
     public Cromossoma[] cross(Cromossoma other) {
@@ -59,15 +59,15 @@ public class Cromossoma implements Comparable<Cromossoma> {
 
         int i = 0;
 
-        while (i < thisPathListLength / 2) {
+        while (i < (thisPathListLength / 2) && i < other.path.size()) {
             this.path.set(i, other.path.get(i));
             i++;
         }
 
         int j = 0;
 
-        while (j < otherPathListLength / 2) {
-            other.path.set(i, thisCromossoma.path.get(i));
+        while (j < (otherPathListLength / 2) && j < thisCromossoma.path.size()) {
+            other.path.set(j, thisCromossoma.path.get(j));
             j++;
         }
 

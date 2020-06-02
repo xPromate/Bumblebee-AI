@@ -27,10 +27,15 @@ public class Main {
         pv.setFitness(9999);
         pv.setStringPath("(ponto1, ponto2, bla bla bla...)");
         c1.mutateByWorstPiece();
-        pv.paintPath(c1.getPath());
+        //pv.paintPath(c1.getPath());
 
-        System.out.println(c1.checkALLColisions());
+        //Thread.sleep(5000);
 
-        Thread.sleep(5000);
+        AG ag = new AG();
+        Cromossoma sol = ag.run();
+
+        System.out.println("Melhor solução encontrada:");
+        System.out.println(sol);
+        pv.paintPath(sol.getPath());
     }
 }
