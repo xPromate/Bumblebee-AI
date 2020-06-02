@@ -19,19 +19,33 @@ public class Main {
 
     public static void main(String[] args) throws Exception {
 
-        conf = Maps.getMap(6);
+        //conf = Maps.getMap(6);
 
-        PathViewer pv = new PathViewer(conf);
+        //PathViewer pv = new PathViewer(conf);
 
+        //Obstacle obs = new Obstacle(conf.getObstacles().get(0));
 
+        //System.out.println(obs.toString());
 
-        Obstacle obs = new Obstacle(conf.getObstacles().get(0));
+        //Point p = new Point(109,316);
 
-        System.out.println(obs.toString());
+        //System.out.println(obs.colision(p));
 
-        Point p = new Point(109,316);
+        Point p1 = new Point(100, 300);
+        Point p2 = new Point(200, 400);
 
-        System.out.println(obs.colision(p));
+        Point p3 = new Point(50, 100);
+        Point p4 = new Point(100, 150);
 
+        Cromossoma c1 = new Cromossoma(p1, p2, 100, 200);
+        Cromossoma c2 = new Cromossoma(p3, p4, 100, 200);
+
+        System.out.println("Path cromossoma 1: " + c1.toString());
+        System.out.println("Path cromossoma 2: " + c2.toString());
+
+        c1.cross(c2);
+
+        System.out.println("Path cross cromossoma 1: " + c1.toString());
+        System.out.println("Path cross cromossoma 2: " + c2.toString());
     }
 }
