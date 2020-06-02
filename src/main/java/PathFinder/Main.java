@@ -32,7 +32,5 @@ public class Main {
         System.out.println(c1.checkALLColisions());
 
         Thread.sleep(5000);
-
-
     }
 }

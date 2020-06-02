@@ -167,16 +167,18 @@ public class Cromossoma implements Comparable<Cromossoma> {
         int firstHalf = 0;
         int secondHalf = 0;
 
-
         for(int i = 0 ; i < this.path.size() ; i++){
             if( i < half){
-                if( checkColision(this.path.get(i).getX(), this.path.get(i).getY(),this.path.get(i+1).getX(), this.path.get(i+1).getY()) ){
-                    firstHalf++;
+                int value = checkColision(this.path.get(i).getX(), this.path.get(i).getY(),this.path.get(i+1).getX(), this.path.get(i+1).getY());
+                if(value > 0){
+                    firstHalf += value;
                 }
             }else{
                 if(!(i == this.path.size()-1)){
-                    if( checkColision(this.path.get(i).getX(), this.path.get(i).getY(),this.path.get(i+1).getX(), this.path.get(i+1).getY()) ){
-                        secondHalf++;
+                    int value = checkColision(this.path.get(i).getX(), this.path.get(i).getY(),this.path.get(i+1).getX(), this.path.get(i+1).getY());
+
+                    if(value > 0){
+                        secondHalf += value;
                     }
                 }
             }
@@ -230,15 +232,17 @@ public class Cromossoma implements Comparable<Cromossoma> {
         }
     }
 
-    private boolean checkColision(int startX, int startY, int endX, int endY) {
+    private int checkColision(int startX, int startY, int endX, int endY) {
         Line2D line = new Line2D.Double(startX, startY, endX, endY);
+        int count = 0;
 
         for (Rectangle r : this.rectangles) {
             if (line.intersects(r)) {
-                return true;
+                count++;
             }
         }
-        return false;
+
+        return count;
     }
 
     public int checkALLColisions() {
@@ -251,8 +255,10 @@ public class Cromossoma implements Comparable<Cromossoma> {
         while (it.hasNext()) {
             next = current;
             current = (Point) it.next();
-            if (checkColision(current.getX(), current.getY(), next.getX(), next.getY())) {
-                count++;
+            int value = checkColision(current.getX(), current.getY(), next.getX(), next.getY());
+
+            if (value > 0) {
+                count += value;
             }
         }
 
