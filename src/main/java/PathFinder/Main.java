@@ -43,9 +43,13 @@ public class Main {
         System.out.println("Path cromossoma 1: " + c1.toString());
         System.out.println("Path cromossoma 2: " + c2.toString());
 
-        c1.cross(c2);
+        c1.mutateRandom();
 
-        System.out.println("Path cross cromossoma 1: " + c1.toString());
-        System.out.println("Path cross cromossoma 2: " + c2.toString());
+        System.out.println("Mutated: " + c1.toString());
+
+        //c1.cross(c2);
+
+        //System.out.println("Path cross cromossoma 1: " + c1.toString());
+        //System.out.println("Path cross cromossoma 2: " + c2.toString());
     }
 }
