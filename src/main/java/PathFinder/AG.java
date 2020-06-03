@@ -93,7 +93,7 @@ public class AG
             pop.addAll(best);
             pop.addAll(filhos);
 
-            Collections.sort(pop, Collections.reverseOrder());
+            Collections.sort(pop);
             best_fitness.add(pop.get(0).getFitness());
             avg_fitness.add(pop.stream().mapToDouble(x -> x.getFitness()).average().getAsDouble()); //calcular fitness médio
 
