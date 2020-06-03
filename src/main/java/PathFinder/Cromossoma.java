@@ -19,7 +19,7 @@ public class Cromossoma implements Comparable<Cromossoma> {
     private Point start;
     private Point end;
     private List<IPoint> path;
-    private final int maxPathSize = 20;
+    private final int maxPathSize = 4;
     private int maxMapHeight;
     private int maxMapWidth;
     public List<Rectangle> rectangles;
@@ -52,44 +52,20 @@ public class Cromossoma implements Comparable<Cromossoma> {
 
     public Cromossoma[] cross(Cromossoma other) {
 
-        int thisPathListLength = this.path.size();
-        int otherPathListLength = other.path.size();
+        Cromossoma child1 = new Cromossoma();
+        Cromossoma child2 = new Cromossoma();
 
-        Cromossoma thisCromossoma = new Cromossoma(this);
+        int min = Math.min(this.path.size(), other.path.size());
 
-        int i = 0;
-
-        while (i < (thisPathListLength / 2) && i < other.path.size()) {
-            this.path.set(i, other.path.get(i));
-            i++;
+        for(int i = 0; i < min - 1; i++){
+            child1.path.add(new Point((this.path.get(i).getX() + other.path.get(i).getX()) / 2, (this.path.get(i).getY() + other.path.get(i).getY()) / 2));
+            child2.path.add(new Point((this.path.get(i).getX() + other.path.get(i).getX()) / 2, (this.path.get(i).getY() + other.path.get(i).getY()) / 2));
         }
 
-        int j = 0;
+        child1.path.add(conf.getEnd());
+        child2.path.add(conf.getEnd());
 
-        while (j < (otherPathListLength / 2) && j < thisCromossoma.path.size()) {
-            other.path.set(j, thisCromossoma.path.get(j));
-            j++;
-        }
-
-        int k = thisPathListLength;
-
-        while (k < this.path.size() && k < other.path.size()) {
-            this.path.set(k, other.path.get(k));
-            k++;
-        }
-
-        int z = otherPathListLength;
-
-        while (z < other.path.size() && z < thisCromossoma.path.size()) {
-            other.path.set(z, thisCromossoma.path.get(z));
-            z++;
-        }
-
-        Cromossoma[] cromossomas = new Cromossoma[2];
-        cromossomas[0] = other;
-        cromossomas[1] = thisCromossoma;
-
-        return cromossomas;
+        return new Cromossoma[] {child1, child2};
     }
 
     public Cromossoma(Cromossoma other) {
@@ -204,7 +180,7 @@ public class Cromossoma implements Comparable<Cromossoma> {
 
     private void putSomePoints() {
 
-        int x = randomNum(1, 18);
+        int x = randomNum(1, this.maxPathSize);
         this.path.add(new Point(this.start.getX(), this.start.getY()));
         for (int i = 0; i < x; i++) {
             path.add(new Point(randomNum(0, this.maxMapWidth), randomNum(0, this.maxMapHeight)));
