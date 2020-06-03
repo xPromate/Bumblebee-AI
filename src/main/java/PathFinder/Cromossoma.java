@@ -81,7 +81,6 @@ public class Cromossoma implements Comparable<Cromossoma> {
 
         while (true) {
             Point p = new Point(this.randomNumber(0, this.maxMapWidth), this.randomNumber(0, this.maxMapHeight));
-            Point p2 = new Point(this.randomNumber(0, this.maxMapWidth), this.randomNumber(0, this.maxMapHeight));
 
             if (!checkCollision(newC.path.get(i).getX(), newC.path.get(i).getY(), p.getX(), p.getY())) {
                 newC.path.add(p);
