@@ -19,23 +19,14 @@ public class Main {
 
     public static void main(String[] args) throws Exception {
 
-        Cromossoma c1 = new Cromossoma();
-        //Cromossoma c2 = new Cromossoma();
-
-        PathViewer pv = new PathViewer(c1.conf);
-
-        pv.setFitness(9999);
-        pv.setStringPath("(ponto1, ponto2, bla bla bla...)");
-        c1.mutateByWorstPiece();
-        //pv.paintPath(c1.getPath());
-
-        //Thread.sleep(5000);
-
         AG ag = new AG();
         Cromossoma sol = ag.run();
 
         System.out.println("Melhor solução encontrada:");
         System.out.println(sol);
+
+        PathViewer pv = new PathViewer(sol.conf);
         pv.paintPath(sol.getPath());
+        sol.getFitness();
     }
 }
