@@ -179,7 +179,6 @@ public class Cromossoma implements Comparable<Cromossoma> {
             }
         }
 
-        System.out.println(firstHalf + " " + secondHalf);
 
         if (firstHalf > secondHalf) {
             this.path.set(0, new Point(this.start.getX(), this.start.getY()));
@@ -211,8 +210,6 @@ public class Cromossoma implements Comparable<Cromossoma> {
             path.add(new Point(randomNum(0, this.maxMapWidth), randomNum(0, this.maxMapHeight)));
         }
         this.path.add(new Point(this.end.getX(), this.end.getY()));
-
-        System.out.println(this.path.toString());
     }
 
 
@@ -256,7 +253,7 @@ public class Cromossoma implements Comparable<Cromossoma> {
             count += checkColision(current.getX(), current.getY(), next.getX(), next.getY());
         }
 
-        return count*100000 + distance + this.path.size()*100;
+        return count*1000000000 + distance + this.path.size()*100000;
     }
 
     //pode ser adicionado ao checkALLColisions e altera lo para fitness
