@@ -21,14 +21,11 @@ public class Main {
 
         AG ag = new AG();
         Cromossoma sol = ag.run();
-
-        //System.out.println("Melhor solução encontrada:");
-        //System.out.println(sol);
-
-        //Cromossoma c1 = new Cromossoma();
         PathViewer pv = new PathViewer(sol.conf);
         pv.paintPath(sol.getPath());
-        //sol.getFitness();
+
+        System.out.println(sol.getFitness());
+
 
 
 

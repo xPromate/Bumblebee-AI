@@ -100,13 +100,34 @@ public class Cromossoma implements Comparable<Cromossoma> {
         Cromossoma child1 = new Cromossoma();
         Cromossoma child2 = new Cromossoma();
 
-        int min = Math.min(this.path.size(), other.path.size());
+        int minSize = Math.min(this.path.size(), other.path.size());
+        int maxSize = Math.max(this.path.size(), other.path.size());
 
-        for (int i = 0; i < min - 1; i++) {
+        for (int i = 0; i < minSize - 1; i++) {
             child1.path.add(new Point((this.path.get(i).getX() + other.path.get(i).getX()) / 2, (this.path.get(i).getY() + other.path.get(i).getY()) / 2));
-            child2.path.add(new Point((this.path.get(i).getX() + other.path.get(i).getX()) / 2, (this.path.get(i).getY() + other.path.get(i).getY()) / 2));
         }
 
+        int random = this.randomNumber(1, minSize-1);
+
+        if(minSize == this.path.size()){
+            for(int i = 0; i < random ; i++){
+                child2.path.add(new Point(this.path.get(i).getX(),this.path.get(i).getY()));
+            }
+
+            for(int i = random ; i < maxSize ; i++ ){
+                child2.path.add(new Point(other.path.get(i).getX(),other.path.get(i).getY()));
+            }
+        }else{
+            for(int i = 0; i < random ; i++){
+                child2.path.add(new Point(other.path.get(i).getX(),other.path.get(i).getY()));
+            }
+
+            for(int i = random ; i < maxSize ; i++ ){
+                child2.path.add(new Point(this.path.get(i).getX(),this.path.get(i).getY()));
+            }
+        }
+
+        
         child1.path.add(conf.getEnd());
         child2.path.add(conf.getEnd());
 
@@ -123,6 +144,31 @@ public class Cromossoma implements Comparable<Cromossoma> {
         }
 
         return false;
+    }
+
+    public double fitnessOfOne(Cromossoma c){
+        Iterator<IPoint> it = c.path.iterator();
+        Point current = (Point) it.next();
+        Point next;
+        boolean collided = false;
+        double distance = 0;
+
+        while (it.hasNext()) {
+            next = current;
+            current = (Point) it.next();
+
+            distance += distanceBetween(current.getX(), current.getY(), next.getX(), next.getY());
+
+            if (checkCollision(current.getX(), current.getY(), next.getX(), next.getY())) {
+                collided = true;
+            }
+        }
+
+        if (collided) {
+            return Double.MAX_VALUE;
+        } else {
+            return distance;
+        }
     }
 
     public double getFitness() {
@@ -146,7 +192,7 @@ public class Cromossoma implements Comparable<Cromossoma> {
         if (collided) {
             return Double.MAX_VALUE;
         } else {
-            return distance + this.path.size() * 100000;
+            return distance;
         }
     }
 
