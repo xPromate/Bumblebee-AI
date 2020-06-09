@@ -146,6 +146,19 @@ public class Cromossoma implements Comparable<Cromossoma> {
         return false;
     }
 
+    private int countCollisions(int startX, int startY, int endX, int endY) {
+        Line2D line = new Line2D.Double(startX, startY, endX, endY);
+        int count = 0;
+
+        for (Rectangle r : this.obstacles) {
+            if (line.intersects(r)) {
+                count++;
+            }
+        }
+
+        return count;
+    }
+
     public double fitnessOfOne(Cromossoma c){
         Iterator<IPoint> it = c.path.iterator();
         Point current = (Point) it.next();
@@ -175,8 +188,8 @@ public class Cromossoma implements Comparable<Cromossoma> {
         Iterator<IPoint> it = this.path.iterator();
         Point current = (Point) it.next();
         Point next;
-        boolean collided = false;
         double distance = 0;
+        int count = 0;
 
         while (it.hasNext()) {
             next = current;
@@ -184,16 +197,10 @@ public class Cromossoma implements Comparable<Cromossoma> {
 
             distance += distanceBetween(current.getX(), current.getY(), next.getX(), next.getY());
 
-            if (checkCollision(current.getX(), current.getY(), next.getX(), next.getY())) {
-                collided = true;
-            }
+            count += countCollisions(current.getX(), current.getY(), next.getX(), next.getY());
         }
 
-        if (collided) {
-            return Double.MAX_VALUE;
-        } else {
-            return distance;
-        }
+        return distance + 100000*count;
     }
 
     private double distanceBetween(int startX, int startY, int endX, int endY) {
