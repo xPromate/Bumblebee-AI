@@ -18,7 +18,7 @@ public class Cromossoma implements Comparable<Cromossoma> {
     private Point end;
     private List<IPoint> path;
     private List<Rectangle> obstacles;
-    private final int maxPathSize = 4;
+    private final int maxPathSize = 5;
     public static IUIConfiguration conf;
 
     static {
