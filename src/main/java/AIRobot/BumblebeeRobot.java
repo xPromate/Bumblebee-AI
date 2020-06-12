@@ -4,12 +4,9 @@ import com.opencsv.CSVWriter;
 import impl.Point;
 import impl.UIConfiguration;
 import interf.IPoint;
-import robocode.AdvancedRobot;
-import robocode.Bullet;
-import robocode.RobotDeathEvent;
-import robocode.ScannedRobotEvent;
-import utils.Utils;
+import robocode.*;
 import robocode.Robot;
+import utils.Utils;
 
 import java.awt.*;
 import java.awt.event.MouseEvent;
@@ -71,7 +68,7 @@ public class BumblebeeRobot extends AdvancedRobot {
          * TODO: Implementar a chamada ao algoritmo genético!
          *
          * */
-        System.out.println("Choo Choo!!!");
+        System.out.println("BumblebeeAI!!");
         points = new ArrayList<>();
         points.add(new impl.Point(100, 100));
         points.add(new impl.Point(200, 200));
@@ -85,12 +82,12 @@ public class BumblebeeRobot extends AdvancedRobot {
     public void onPaint(Graphics2D g) {
         super.onPaint(g);
 
-        g.setColor(Color.RED);
+        g.setColor(Color.YELLOW);
         obstacles.stream().forEach(x -> g.drawRect(x.x, x.y, (int) x.getWidth(), (int) x.getHeight()));
 
         if (points != null) {
             for (int i = 1; i < points.size(); i++)
-                drawThickLine(g, points.get(i - 1).getX(), points.get(i - 1).getY(), points.get(i).getX(), points.get(i).getY(), 2, Color.green);
+                drawThickLine(g, points.get(i - 1).getX(), points.get(i - 1).getY(), points.get(i).getX(), points.get(i).getY(), 2, Color.yellow);
         }
     }
 
@@ -186,6 +183,34 @@ public class BumblebeeRobot extends AdvancedRobot {
         robot.execute();
     }
 
+    @Override
+    public void onBulletHit(BulletHitEvent event) {
+        super.onBulletHit(event);
+
+    }
+
+    @Override
+    public void onBulletMissed(BulletMissedEvent event) {
+        super.onBulletMissed(event);
+
+    }
+
+    @Override
+    public void onRoundEnded(RoundEndedEvent event) {
+        super.onRoundEnded(event);
+
+        try {
+            this.fireDataToCSV();
+        } catch (IOException e) {
+            System.out.println(e);
+        }
+    }
+
+    @Override
+    public void onBattleEnded(BattleEndedEvent event) {
+        super.onBattleEnded(event);
+    }
+
     public void fireDataToCSV() throws IOException {
         try (Writer writer = Files.newBufferedWriter(Paths.get("./FireData/fire_data.csv"))) {
 
@@ -210,5 +235,4 @@ public class BumblebeeRobot extends AdvancedRobot {
             }
         }
     }
-
 }
