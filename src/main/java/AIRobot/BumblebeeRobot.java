@@ -32,6 +32,8 @@ public class BumblebeeRobot extends AdvancedRobot {
     public void run() {
         super.run();
 
+        this.fireData = new ArrayList<>();
+
         obstacles = new ArrayList<>();
         inimigos = new HashMap<>();
         conf = new UIConfiguration((int) getBattleFieldWidth(), (int) getBattleFieldHeight(), obstacles);
@@ -98,9 +100,11 @@ public class BumblebeeRobot extends AdvancedRobot {
         Bullet b = this.fireBullet(3);
         if (b == null)
             System.out.println("Não disparei");
-        else
+        else {
             System.out.println("Disparei ao " + event.getName());
+        }
 
+        System.out.println(b.getVelocity() + " velocidade bala");
         System.out.println("Enemy spotted: " + event.getName());
 
         Point2D.Double ponto = getEnemyCoordinates(this, event.getBearing(), event.getDistance());
@@ -187,12 +191,14 @@ public class BumblebeeRobot extends AdvancedRobot {
     public void onBulletHit(BulletHitEvent event) {
         super.onBulletHit(event);
 
+        this.fireData.add(new BulletData(event.getBullet().getVictim(), 1, 1, event.getBullet().getVelocity(), 1,1, event.getBullet().getPower(), true));
     }
 
     @Override
     public void onBulletMissed(BulletMissedEvent event) {
         super.onBulletMissed(event);
 
+        this.fireData.add(new BulletData("null", 1, 1, event.getBullet().getVelocity(), 1,1, event.getBullet().getPower(), false));
     }
 
     @Override
@@ -212,7 +218,7 @@ public class BumblebeeRobot extends AdvancedRobot {
     }
 
     public void fireDataToCSV() throws IOException {
-        try (Writer writer = Files.newBufferedWriter(Paths.get("./FireData/fire_data.csv"))) {
+        try (Writer writer = Files.newBufferedWriter(Paths.get("C:/Users/jorge/IdeaProjects/Bumblebee-AI/FireData/fire_data.csv"))) {
 
             CSVWriter csvWriter = new CSVWriter(writer, CSVWriter.DEFAULT_SEPARATOR, CSVWriter.NO_QUOTE_CHARACTER, CSVWriter.DEFAULT_ESCAPE_CHARACTER, CSVWriter.DEFAULT_LINE_END);
 
