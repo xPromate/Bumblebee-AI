@@ -11,9 +11,12 @@ import utils.Utils;
 import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.awt.geom.Point2D;
+import java.io.File;
 import java.io.IOException;
 import java.io.Writer;
+import java.nio.file.FileSystems;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -218,7 +221,12 @@ public class BumblebeeRobot extends AdvancedRobot {
     }
 
     public void fireDataToCSV() throws IOException {
-        try (Writer writer = Files.newBufferedWriter(Paths.get("C:/Users/jorge/IdeaProjects/Bumblebee-AI/FireData/fire_data.csv"))) {
+
+        String path = Paths.get(new File(".").getAbsolutePath()).toAbsolutePath().toString();
+        String[] split = path.split("\\.");
+        String pathF = split[0] + "/fireData/fire_data.csv";
+
+        try (Writer writer = Files.newBufferedWriter(Paths.get(String.valueOf(new File(pathF))))) {
 
             CSVWriter csvWriter = new CSVWriter(writer, CSVWriter.DEFAULT_SEPARATOR, CSVWriter.NO_QUOTE_CHARACTER, CSVWriter.DEFAULT_ESCAPE_CHARACTER, CSVWriter.DEFAULT_LINE_END);
 
@@ -232,7 +240,6 @@ public class BumblebeeRobot extends AdvancedRobot {
                         Double.toString(b.getDistance()),
                         Double.toString(b.getGun_heat()),
                         Double.toString(b.getBullet_velocity()),
-                        Double.toString(b.getBearing()),
                         Double.toString(b.getBearing()),
                         Double.toString(b.getHeading()),
                         Double.toString(b.getPower_hit()),
