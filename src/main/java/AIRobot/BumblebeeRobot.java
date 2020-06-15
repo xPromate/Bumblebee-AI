@@ -249,7 +249,7 @@ public class BumblebeeRobot extends AdvancedRobot {
 
         String path = Paths.get(new File(".").getAbsolutePath()).toAbsolutePath().toString();
         String[] split = path.split("\\.");
-        String pathF = split[0] + "/fireData/fire_data.csv_" + this.count_round;
+        String pathF = split[0] + "/fireData/fire_data_" + this.count_round + ".csv";
 
         try (Writer writer = Files.newBufferedWriter(Paths.get(String.valueOf(new File(pathF))))) {
 
