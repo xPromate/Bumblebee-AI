@@ -34,6 +34,7 @@ public class BumblebeeRobot extends AdvancedRobot {
     private int currentPoint = -1;
     private int count_ALL = 0;
     private int count_separated = 0;
+    private int count_round = 0;
 
     @Override
     public void run() {
@@ -219,6 +220,15 @@ public class BumblebeeRobot extends AdvancedRobot {
     @Override
     public void onRoundEnded(RoundEndedEvent event) {
         super.onRoundEnded(event);
+
+        System.out.println(this.count_ALL + "dentro do fire");
+        System.out.println(this.count_separated + "separados");
+        try {
+            this.fireDataToCSV();
+        } catch (IOException e) {
+            System.out.println(e);
+        }
+        this.count_round++;
     }
 
     @Override
@@ -232,15 +242,14 @@ public class BumblebeeRobot extends AdvancedRobot {
         }
 
         System.out.println(this.fireData.size() + "LISTA");
-        System.out.println(this.count_ALL + "dentro do fire");
-        System.out.println(this.count_separated + "separados");
+
     }
 
     public void fireDataToCSV() throws IOException {
 
         String path = Paths.get(new File(".").getAbsolutePath()).toAbsolutePath().toString();
         String[] split = path.split("\\.");
-        String pathF = split[0] + "/fireData/fire_data.csv";
+        String pathF = split[0] + "/fireData/fire_data.csv_" + this.count_round;
 
         try (Writer writer = Files.newBufferedWriter(Paths.get(String.valueOf(new File(pathF))))) {
 
