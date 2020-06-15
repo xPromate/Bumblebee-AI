@@ -28,19 +28,18 @@ public class BumblebeeRobot extends AdvancedRobot {
 
     private List<Rectangle> obstacles;
     private List<IPoint> points;
-    private List<BulletData> fireData;
+    private static List<BulletData> fireData =  new ArrayList<>();;
     private HashMap<String, Rectangle> inimigos;
     public static UIConfiguration conf;
     private int currentPoint = -1;
     private int count_ALL = 0;
     private int count_separated = 0;
     private int count_round = 0;
+    private static int count_LOL = 0;
 
     @Override
     public void run() {
         super.run();
-
-        this.fireData = new ArrayList<>();
 
         obstacles = new ArrayList<>();
         inimigos = new HashMap<>();
@@ -112,7 +111,7 @@ public class BumblebeeRobot extends AdvancedRobot {
         else {
             System.out.println("Disparei ao " + event.getName());
             this.count_ALL++;
-
+            count_LOL++;
         }
 
         System.out.println(b.getVelocity() + " velocidade bala");
@@ -205,7 +204,7 @@ public class BumblebeeRobot extends AdvancedRobot {
 
         this.count_separated++;
 
-        this.fireData.add(new BulletData(event.getBullet().getVictim(), 1, 1, event.getBullet().getVelocity(), 1,1, event.getBullet().getPower(), true));
+        fireData.add(new BulletData(event.getBullet().getVictim(), 1, 1, event.getBullet().getVelocity(), 1,1, event.getBullet().getPower(), true));
     }
 
     @Override
@@ -214,7 +213,7 @@ public class BumblebeeRobot extends AdvancedRobot {
 
         this.count_separated++;
 
-        this.fireData.add(new BulletData("null", 1, 1, event.getBullet().getVelocity(), 1,1, event.getBullet().getPower(), false));
+        fireData.add(new BulletData("null", 1, 1, event.getBullet().getVelocity(), 1,1, event.getBullet().getPower(), false));
     }
 
     @Override
@@ -241,7 +240,8 @@ public class BumblebeeRobot extends AdvancedRobot {
             System.out.println(e);
         }
 
-        System.out.println(this.fireData.size() + "LISTA");
+        System.out.println(fireData.size() + "LISTA");
+        System.out.println(count_LOL + "a");
 
     }
 
@@ -249,7 +249,7 @@ public class BumblebeeRobot extends AdvancedRobot {
 
         String path = Paths.get(new File(".").getAbsolutePath()).toAbsolutePath().toString();
         String[] split = path.split("\\.");
-        String pathF = split[0] + "/fireData/fire_data_" + this.count_round + ".csv";
+        String pathF = split[0] + "/fireData/fire_data.csv";
 
         try (Writer writer = Files.newBufferedWriter(Paths.get(String.valueOf(new File(pathF))))) {
 
@@ -259,7 +259,7 @@ public class BumblebeeRobot extends AdvancedRobot {
 
             csvWriter.writeNext(headerRecord);
 
-            for (BulletData b : this.fireData) {
+            for (BulletData b : fireData) {
                 csvWriter.writeNext(new String[]{
                         b.getRobot_name(),
                         Double.toString(b.getDistance()),
