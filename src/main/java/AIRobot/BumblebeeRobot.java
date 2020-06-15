@@ -28,14 +28,10 @@ public class BumblebeeRobot extends AdvancedRobot {
 
     private List<Rectangle> obstacles;
     private List<IPoint> points;
-    private static List<BulletData> fireData =  new ArrayList<>();;
+    private static List<BulletData> fireData =  new ArrayList<>();
     private HashMap<String, Rectangle> inimigos;
     public static UIConfiguration conf;
     private int currentPoint = -1;
-    private int count_ALL = 0;
-    private int count_separated = 0;
-    private int count_round = 0;
-    private static int count_LOL = 0;
 
     @Override
     public void run() {
@@ -110,8 +106,6 @@ public class BumblebeeRobot extends AdvancedRobot {
             System.out.println("Não disparei");
         else {
             System.out.println("Disparei ao " + event.getName());
-            this.count_ALL++;
-            count_LOL++;
         }
 
         System.out.println(b.getVelocity() + " velocidade bala");
@@ -202,7 +196,6 @@ public class BumblebeeRobot extends AdvancedRobot {
     public void onBulletHit(BulletHitEvent event) {
         super.onBulletHit(event);
 
-        this.count_separated++;
 
         fireData.add(new BulletData(event.getBullet().getVictim(), 1, 1, event.getBullet().getVelocity(), 1,1, event.getBullet().getPower(), true));
     }
@@ -211,7 +204,6 @@ public class BumblebeeRobot extends AdvancedRobot {
     public void onBulletMissed(BulletMissedEvent event) {
         super.onBulletMissed(event);
 
-        this.count_separated++;
 
         fireData.add(new BulletData("null", 1, 1, event.getBullet().getVelocity(), 1,1, event.getBullet().getPower(), false));
     }
@@ -220,14 +212,11 @@ public class BumblebeeRobot extends AdvancedRobot {
     public void onRoundEnded(RoundEndedEvent event) {
         super.onRoundEnded(event);
 
-        System.out.println(this.count_ALL + "dentro do fire");
-        System.out.println(this.count_separated + "separados");
         try {
             this.fireDataToCSV();
         } catch (IOException e) {
             System.out.println(e);
         }
-        this.count_round++;
     }
 
     @Override
@@ -241,7 +230,6 @@ public class BumblebeeRobot extends AdvancedRobot {
         }
 
         System.out.println(fireData.size() + "LISTA");
-        System.out.println(count_LOL + "a");
 
     }
 
