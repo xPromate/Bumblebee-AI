@@ -25,10 +25,5 @@ public class Main {
         pv.paintPath(sol.getPath());
 
         System.out.println(sol.getFitness());
-
-
-
-
-
     }
 }

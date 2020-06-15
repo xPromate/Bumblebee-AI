@@ -53,6 +53,16 @@ public class Cromossoma implements Comparable<Cromossoma> {
         this.obstacles = conf.getObstacles();
     }
 
+    public Cromossoma(Point start, Point end, int height, int width, List<Rectangle> obstacles){
+        this.maxMapHeight = height;
+        this.maxMapWidth = width;
+        this.start = start;
+        this.end = end;
+        this.obstacles = obstacles;
+        this.path = new ArrayList<>();
+        this.addPoints();
+    }
+
     public Cromossoma(int maxSize) {
         this.maxMapHeight = conf.getHeight();
         this.maxMapWidth = conf.getWidth();

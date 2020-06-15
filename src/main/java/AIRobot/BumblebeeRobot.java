@@ -1,5 +1,7 @@
 package AIRobot;
 
+import PathFinder.Cromossoma;
+import PathFinder.AG;
 import com.opencsv.CSVWriter;
 import impl.Point;
 import impl.UIConfiguration;
@@ -14,9 +16,7 @@ import java.awt.geom.Point2D;
 import java.io.File;
 import java.io.IOException;
 import java.io.Writer;
-import java.nio.file.FileSystems;
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -69,17 +69,14 @@ public class BumblebeeRobot extends AdvancedRobot {
         conf.setStart(new impl.Point((int) this.getX(), (int) this.getY()));
         conf.setEnd(new impl.Point(e.getX(), e.getY()));
 
-        /*
-         * TODO: Implementar a chamada ao algoritmo genético!
-         *
-         * */
-        System.out.println("BumblebeeAI!!");
-        points = new ArrayList<>();
-        points.add(new impl.Point(100, 100));
-        points.add(new impl.Point(200, 200));
-        points.add(new impl.Point(250, 500));
-        points.add(new Point(300, 350));
+        AG ag = new AG();
+        Cromossoma sol = ag.run((Point) conf.start, (Point) conf.end, conf.getHeight(), conf.getWidth(), conf.getObstacles());
+        List<IPoint> path = sol.getPath();
 
+        System.out.println("BumblebeeAI!!");
+
+        points = new ArrayList<>();
+        this.points.addAll(path);
         currentPoint = 0;
     }
 
