@@ -22,7 +22,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import static robocode.util.Utils.normalRelativeAngleDegrees;
+import static robocode.util.Utils.normalRelativeAngle;
+
 
 public class BumblebeeRobot extends AdvancedRobot {
 
@@ -42,8 +43,9 @@ public class BumblebeeRobot extends AdvancedRobot {
         conf = new UIConfiguration((int) getBattleFieldWidth(), (int) getBattleFieldHeight(), obstacles);
 
         while (true) {
-            this.setTurnRadarRight(360);
 
+
+            turnRadarRightRadians(Double.POSITIVE_INFINITY);
             //se se está a dirigir para algum ponto
             if (currentPoint >= 0) {
                 IPoint ponto = points.get(currentPoint);
@@ -57,6 +59,8 @@ public class BumblebeeRobot extends AdvancedRobot {
 
                 advancedRobotGoTo(this, ponto.getX(), ponto.getY());
             }
+
+            scan();
 
             this.execute();
         }
@@ -98,8 +102,11 @@ public class BumblebeeRobot extends AdvancedRobot {
     public void onScannedRobot(ScannedRobotEvent event) {
         super.onScannedRobot(event);
 
-        double gunTurnAmt = normalRelativeAngleDegrees(event.getBearing() + (getHeading() - getRadarHeading()));
-        turnGunRight(gunTurnAmt);
+        double radarTurn = getHeadingRadians() + event.getBearingRadians()  -getRadarHeadingRadians();
+        setTurnRadarRightRadians(normalRelativeAngle(radarTurn));
+
+        //double gunTurn = normalRelativeAngleDegrees(event.getBearing() + (getHeading() - getRadarHeading()));
+        //turnGunRight(gunTurn);
 
         Bullet b = this.fireBullet(3);
         if (b == null)
@@ -181,7 +188,7 @@ public class BumblebeeRobot extends AdvancedRobot {
         y -= robot.getY();
 
         double angleToTarget = Math.atan2(x, y);
-        double targetAngle = robocode.util.Utils.normalRelativeAngle(angleToTarget - Math.toRadians(robot.getHeading()));
+        double targetAngle = normalRelativeAngle(angleToTarget - Math.toRadians(robot.getHeading()));
         double distance = Math.hypot(x, y);
         double turnAngle = Math.atan(Math.tan(targetAngle));
         robot.setTurnRight(Math.toDegrees(turnAngle));
