@@ -5,11 +5,25 @@ plugins {
 group 'org.example'
 version '1.0-SNAPSHOT'
 
+ext {
+    // Configure h2o-dev dependency information
+    h2oBranch = 'rel-xu'
+    h2oBuildNumber = '6'
+    h2oProjectVersion = "3.22.1.${h2oBuildNumber}"
+}
+
 repositories {
     mavenCentral()
 }
 
 dependencies {
     testCompile group: 'junit', name: 'junit', version: '4.12'
+    compile "ai.h2o:h2o-core:${h2oProjectVersion}"
+    // Define dependency on H2O algorithm
+    compile "ai.h2o:h2o-algos:${h2oProjectVersion}"
+    // Demands web support
+    compile "ai.h2o:h2o-web:${h2oProjectVersion}"
+    // Contains H2O entry points
+    compile "ai.h2o:h2o-app:${h2oProjectVersion}"
     compile fileTree(dir: 'API', include: '*.jar')
 }

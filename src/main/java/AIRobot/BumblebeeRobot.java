@@ -3,6 +3,7 @@ package AIRobot;
 import PathFinder.Cromossoma;
 import PathFinder.AG;
 import com.opencsv.CSVWriter;
+import hex.genmodel.easy.RowData;
 import impl.Point;
 import impl.UIConfiguration;
 import interf.IPoint;
@@ -101,6 +102,9 @@ public class BumblebeeRobot extends AdvancedRobot {
     @Override
     public void onScannedRobot(ScannedRobotEvent event) {
         super.onScannedRobot(event);
+
+        RowData row = new RowData();
+        row.put("AGE", "68");
 
         //double radarTurn = getHeadingRadians() + event.getBearingRadians()  -getRadarHeadingRadians();
         //setTurnRadarRightRadians(normalRelativeAngle(radarTurn));
