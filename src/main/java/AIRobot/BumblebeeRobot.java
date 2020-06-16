@@ -13,14 +13,14 @@ import utils.Utils;
 import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.awt.geom.Point2D;
-import java.io.File;
-import java.io.IOException;
-import java.io.Writer;
+import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.time.format.DateTimeFormatter;
+import java.time.LocalDateTime;
 
 import static robocode.util.Utils.normalRelativeAngle;
 import static robocode.util.Utils.normalRelativeAngleDegrees;
@@ -30,7 +30,7 @@ public class BumblebeeRobot extends AdvancedRobot {
 
     private List<Rectangle> obstacles;
     private List<IPoint> points;
-    private static List<BulletData> fireData =  new ArrayList<>();
+    private static List<BulletData> fireData = new ArrayList<>();
     private HashMap<String, Rectangle> inimigos;
     public static UIConfiguration conf;
     private int currentPoint = -1;
@@ -44,9 +44,6 @@ public class BumblebeeRobot extends AdvancedRobot {
         conf = new UIConfiguration((int) getBattleFieldWidth(), (int) getBattleFieldHeight(), obstacles);
 
         while (true) {
-
-
-
             //se se está a dirigir para algum ponto
             if (currentPoint >= 0) {
                 IPoint ponto = points.get(currentPoint);
@@ -59,7 +56,7 @@ public class BumblebeeRobot extends AdvancedRobot {
                 }
 
                 advancedRobotGoTo(this, ponto.getX(), ponto.getY());
-            }else{
+            } else {
                 turnGunRight(360);
             }
 
@@ -108,18 +105,29 @@ public class BumblebeeRobot extends AdvancedRobot {
         //double radarTurn = getHeadingRadians() + event.getBearingRadians()  -getRadarHeadingRadians();
         //setTurnRadarRightRadians(normalRelativeAngle(radarTurn));
 
-
-        double gunTurn = getHeadingRadians() + event.getBearingRadians()  -getRadarHeadingRadians();
+        double gunTurn = getHeadingRadians() + event.getBearingRadians() - getRadarHeadingRadians();
         turnGunRight(gunTurn);
 
         Bullet b = this.fireBullet(3);
         if (b == null)
             System.out.println("Não disparei");
         else {
+            boolean isMoving = false;
+
+            if(this.getDistanceRemaining() > 0 || this.getTurnRemaining() > 0){
+                isMoving = true;
+            }
+
+            fireData.add(new BulletData(event.getName(), event.getDistance(), b.getVelocity(), event.getBearing(), event.getHeading(), b.getPower(), isMoving));
+            System.out.println(b.getVictim());
             System.out.println("Disparei ao " + event.getName());
         }
 
-        System.out.println(b.getVelocity() + " velocidade bala");
+        try {
+            System.out.println(b.getVelocity() + " velocidade bala");
+        } catch (NullPointerException e) {
+        }
+
         System.out.println("Enemy spotted: " + event.getName());
 
         Point2D.Double ponto = getEnemyCoordinates(this, event.getBearing(), event.getDistance());
@@ -136,7 +144,7 @@ public class BumblebeeRobot extends AdvancedRobot {
 
         //System.out.println("Enemies at:");
         //obstacles.forEach(x -> System.out.println(x));
-        scan();
+        super.scan();
     }
 
     @Override
@@ -207,16 +215,14 @@ public class BumblebeeRobot extends AdvancedRobot {
     public void onBulletHit(BulletHitEvent event) {
         super.onBulletHit(event);
 
-
-        fireData.add(new BulletData(event.getBullet().getVictim(), 1, 1, event.getBullet().getVelocity(), 1,1, event.getBullet().getPower(), true));
+        fireData.get(fireData.size() - 1).setHit(event.getName().equals(event.getBullet().getVictim()));
     }
 
     @Override
     public void onBulletMissed(BulletMissedEvent event) {
         super.onBulletMissed(event);
 
-
-        fireData.add(new BulletData("null", 1, 1, event.getBullet().getVelocity(), 1,1, event.getBullet().getPower(), false));
+        fireData.get(fireData.size() - 1).setHit(false);
     }
 
     @Override
@@ -241,20 +247,23 @@ public class BumblebeeRobot extends AdvancedRobot {
         }
 
         System.out.println(fireData.size() + "LISTA");
-
     }
 
     public void fireDataToCSV() throws IOException {
 
+        DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd-HH-mm-ss");
+        LocalDateTime now = LocalDateTime.now();
+        String date = dtf.format(now);
+
         String path = Paths.get(new File(".").getAbsolutePath()).toAbsolutePath().toString();
         String[] split = path.split("\\.");
-        String pathF = split[0] + "/fireData/fire_data.csv";
+        String pathF = split[0] + "fireData\\fire_data" + date + ".csv";
 
         try (Writer writer = Files.newBufferedWriter(Paths.get(String.valueOf(new File(pathF))))) {
 
             CSVWriter csvWriter = new CSVWriter(writer, CSVWriter.DEFAULT_SEPARATOR, CSVWriter.NO_QUOTE_CHARACTER, CSVWriter.DEFAULT_ESCAPE_CHARACTER, CSVWriter.DEFAULT_LINE_END);
 
-            String[] headerRecord = {"robot_name", "distance", "gun_heat", "bullet_velocity", "bearing", "heading", "power_hit", "hit"};
+            String[] headerRecord = {"robot_name", "distance", "bullet_velocity", "bearing", "heading", "power_hit", "hit", "is_moving"};
 
             csvWriter.writeNext(headerRecord);
 
@@ -262,14 +271,16 @@ public class BumblebeeRobot extends AdvancedRobot {
                 csvWriter.writeNext(new String[]{
                         b.getRobot_name(),
                         Double.toString(b.getDistance()),
-                        Double.toString(b.getGun_heat()),
                         Double.toString(b.getBullet_velocity()),
                         Double.toString(b.getBearing()),
                         Double.toString(b.getHeading()),
                         Double.toString(b.getPower_hit()),
                         Boolean.toString(b.isHit()),
+                        Boolean.toString(b.isMoving())
                 });
             }
         }
+
+        System.out.println("Guardado com sucesso.");
     }
 }
