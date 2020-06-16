@@ -23,7 +23,7 @@ public class Cromossoma implements Comparable<Cromossoma> {
 
     static {
         try {
-            conf = Maps.getMap(6);
+            conf = Maps.getMap(0);
         } catch (Exception e) {
             System.out.println(e);
         }

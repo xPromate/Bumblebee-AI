@@ -3,6 +3,7 @@ package PathFinder;
 import java.awt.*;
 
 import impl.Point;
+import performance.Evaluate;
 
 import java.io.FileWriter;
 import java.io.IOException;
@@ -53,6 +54,8 @@ public class AG {
         bestSolutionEver = pop.get(0);
         best_fitness.add(pop.get(0).getFitness());
         avg_fitness.add(pop.stream().mapToDouble(x -> x.getFitness()).average().getAsDouble()); //calcular fitness médio
+
+        Evaluate eval = new Evaluate(Conf.pop_size, 0, "Bumblebee");
 
         while (iteration_counter < Conf.generation_limit && convergence_counter < Conf.converence_limit) {
 
@@ -105,8 +108,11 @@ public class AG {
                 convergence_counter = 0;
                 last_fitness_value = pop.get(0).getFitness();
                 bestSolutionEver = pop.get(0);
+                eval.addSolution(bestSolutionEver.getPath(), iteration_counter);
             }
         }
+
+        System.out.println("Enviado: " + eval.submit());
 
         //Escrever resultados em ficheiro
         try {
