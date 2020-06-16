@@ -23,6 +23,7 @@ import java.util.HashMap;
 import java.util.List;
 
 import static robocode.util.Utils.normalRelativeAngle;
+import static robocode.util.Utils.normalRelativeAngleDegrees;
 
 
 public class BumblebeeRobot extends AdvancedRobot {
@@ -45,7 +46,7 @@ public class BumblebeeRobot extends AdvancedRobot {
         while (true) {
 
 
-            turnRadarRightRadians(Double.POSITIVE_INFINITY);
+
             //se se está a dirigir para algum ponto
             if (currentPoint >= 0) {
                 IPoint ponto = points.get(currentPoint);
@@ -58,6 +59,8 @@ public class BumblebeeRobot extends AdvancedRobot {
                 }
 
                 advancedRobotGoTo(this, ponto.getX(), ponto.getY());
+            }else{
+                turnGunRight(360);
             }
 
             scan();
@@ -102,11 +105,12 @@ public class BumblebeeRobot extends AdvancedRobot {
     public void onScannedRobot(ScannedRobotEvent event) {
         super.onScannedRobot(event);
 
-        double radarTurn = getHeadingRadians() + event.getBearingRadians()  -getRadarHeadingRadians();
-        setTurnRadarRightRadians(normalRelativeAngle(radarTurn));
+        //double radarTurn = getHeadingRadians() + event.getBearingRadians()  -getRadarHeadingRadians();
+        //setTurnRadarRightRadians(normalRelativeAngle(radarTurn));
 
-        //double gunTurn = normalRelativeAngleDegrees(event.getBearing() + (getHeading() - getRadarHeading()));
-        //turnGunRight(gunTurn);
+
+        double gunTurn = getHeadingRadians() + event.getBearingRadians()  -getRadarHeadingRadians();
+        turnGunRight(gunTurn);
 
         Bullet b = this.fireBullet(3);
         if (b == null)
