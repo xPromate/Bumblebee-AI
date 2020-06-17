@@ -3,7 +3,6 @@ package AIRobot;
 import PathFinder.Cromossoma;
 import PathFinder.AG;
 import com.opencsv.CSVWriter;
-import hex.genmodel.MojoModel;
 import hex.genmodel.easy.EasyPredictModelWrapper;
 import hex.genmodel.easy.RowData;
 import impl.Point;
@@ -26,8 +25,6 @@ import java.time.format.DateTimeFormatter;
 import java.time.LocalDateTime;
 
 import static robocode.util.Utils.normalRelativeAngle;
-import static robocode.util.Utils.normalRelativeAngleDegrees;
-
 
 public class BumblebeeRobot extends AdvancedRobot {
 
@@ -43,11 +40,11 @@ public class BumblebeeRobot extends AdvancedRobot {
     public void run() {
         super.run();
 
-        try {
-            model = new EasyPredictModelWrapper(MojoModel.load("C:\\Users\\João Moreira\\IdeaProjects\\Bumblebee-AI\\model\\default_random_forest.zip"));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        //try {
+        //   model = new EasyPredictModelWrapper(MojoModel.load("C:\\Users\\João Moreira\\IdeaProjects\\Bumblebee-AI\\model\\default_random_forest.zip"));
+        //} catch (IOException e) {
+        //     e.printStackTrace();
+        //}
 
         obstacles = new ArrayList<>();
         inimigos = new HashMap<>();
@@ -112,14 +109,11 @@ public class BumblebeeRobot extends AdvancedRobot {
     public void onScannedRobot(ScannedRobotEvent event) {
         super.onScannedRobot(event);
 
-
-
         //double radarTurn = getHeadingRadians() + event.getBearingRadians()  -getRadarHeadingRadians();
         //setTurnRadarRightRadians(normalRelativeAngle(radarTurn));
 
         double gunTurn = getHeadingRadians() + event.getBearingRadians() - getRadarHeadingRadians();
         turnGunRight(gunTurn);
-
 
         RowData rowData = new RowData();
         rowData.put("robot_name",event.getName());

@@ -4,20 +4,16 @@ public class BulletData {
 
     private String robot_name;
     private double distance;
-
     private double bearing;
     private double heading;
-
     private boolean hit;
     private boolean isMoving;
 
     public BulletData(String robot_name, double distance, double bearing, double heading, boolean isMoving) {
         this.robot_name = robot_name;
         this.distance = distance;
-
         this.bearing = bearing;
         this.heading = heading;
-
         this.isMoving = isMoving;
     }
 
@@ -29,8 +25,6 @@ public class BulletData {
         return distance;
     }
 
-
-
     public double getBearing() {
         return bearing;
     }
@@ -38,8 +32,6 @@ public class BulletData {
     public double getHeading() {
         return heading;
     }
-
-
 
     public boolean isMoving() {
         return isMoving;
@@ -58,10 +50,8 @@ public class BulletData {
         return "BulletData{" +
                 "robot_name='" + robot_name + '\'' +
                 ", distance=" + distance +
-
                 ", bearing=" + bearing +
                 ", heading=" + heading +
-
                 ", hit=" + hit +
                 '}';
     }
