@@ -3,6 +3,8 @@ package AIRobot;
 import PathFinder.Cromossoma;
 import PathFinder.AG;
 import com.opencsv.CSVWriter;
+import hex.genmodel.MojoModel;
+import hex.genmodel.easy.EasyPredictModelWrapper;
 import hex.genmodel.easy.RowData;
 import impl.Point;
 import impl.UIConfiguration;
@@ -35,10 +37,17 @@ public class BumblebeeRobot extends AdvancedRobot {
     private HashMap<String, Rectangle> inimigos;
     public static UIConfiguration conf;
     private int currentPoint = -1;
+    private EasyPredictModelWrapper model;
 
     @Override
     public void run() {
         super.run();
+
+        try {
+            model = new EasyPredictModelWrapper(MojoModel.load("C:\\Users\\João Moreira\\IdeaProjects\\Bumblebee-AI\\model\\default_random_forest.zip"));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
         obstacles = new ArrayList<>();
         inimigos = new HashMap<>();
@@ -103,8 +112,7 @@ public class BumblebeeRobot extends AdvancedRobot {
     public void onScannedRobot(ScannedRobotEvent event) {
         super.onScannedRobot(event);
 
-        RowData row = new RowData();
-        row.put("AGE", "68");
+
 
         //double radarTurn = getHeadingRadians() + event.getBearingRadians()  -getRadarHeadingRadians();
         //setTurnRadarRightRadians(normalRelativeAngle(radarTurn));
@@ -112,17 +120,19 @@ public class BumblebeeRobot extends AdvancedRobot {
         double gunTurn = getHeadingRadians() + event.getBearingRadians() - getRadarHeadingRadians();
         turnGunRight(gunTurn);
 
+
+        RowData rowData = new RowData();
+        rowData.put("robot_name",event.getName());
+        rowData.put("distance",event.getDistance());
+        rowData.put("bearing",event.getBearing());
+        rowData.put("heading",event.getHeading());
+        rowData.put("moving",this.getDistanceRemaining() > 0 || this.getTurnRemaining() > 0);
+
         Bullet b = this.fireBullet(3);
         if (b == null)
             System.out.println("Não disparei");
         else {
-            boolean isMoving = false;
-
-            if(this.getDistanceRemaining() > 0 || this.getTurnRemaining() > 0){
-                isMoving = true;
-            }
-
-            fireData.add(new BulletData(event.getName(), event.getDistance(), b.getVelocity(), event.getBearing(), event.getHeading(), b.getPower(), isMoving));
+            fireData.add(new BulletData(event.getName(), event.getDistance(), event.getBearing(), event.getHeading(),  this.getDistanceRemaining() > 0 || this.getTurnRemaining() > 0));
             System.out.println(b.getVictim());
             System.out.println("Disparei ao " + event.getName());
         }
@@ -267,7 +277,7 @@ public class BumblebeeRobot extends AdvancedRobot {
 
             CSVWriter csvWriter = new CSVWriter(writer, CSVWriter.DEFAULT_SEPARATOR, CSVWriter.NO_QUOTE_CHARACTER, CSVWriter.DEFAULT_ESCAPE_CHARACTER, CSVWriter.DEFAULT_LINE_END);
 
-            String[] headerRecord = {"robot_name", "distance", "bullet_velocity", "bearing", "heading", "power_hit", "hit", "is_moving"};
+            String[] headerRecord = {"robot_name", "distance", "bearing", "heading",  "is_moving", "hit" };
 
             csvWriter.writeNext(headerRecord);
 
@@ -275,12 +285,10 @@ public class BumblebeeRobot extends AdvancedRobot {
                 csvWriter.writeNext(new String[]{
                         b.getRobot_name(),
                         Double.toString(b.getDistance()),
-                        Double.toString(b.getBullet_velocity()),
                         Double.toString(b.getBearing()),
                         Double.toString(b.getHeading()),
-                        Double.toString(b.getPower_hit()),
-                        Boolean.toString(b.isHit()),
-                        Boolean.toString(b.isMoving())
+                        Boolean.toString(b.isMoving()),
+                        Boolean.toString(b.isHit())
                 });
             }
         }
