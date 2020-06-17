@@ -3,8 +3,11 @@ package AIRobot;
 import PathFinder.Cromossoma;
 import PathFinder.AG;
 import com.opencsv.CSVWriter;
+import hex.genmodel.MojoModel;
 import hex.genmodel.easy.EasyPredictModelWrapper;
 import hex.genmodel.easy.RowData;
+import hex.genmodel.easy.exception.PredictException;
+import hex.genmodel.easy.prediction.RegressionModelPrediction;
 import impl.Point;
 import impl.UIConfiguration;
 import interf.IPoint;
@@ -35,16 +38,19 @@ public class BumblebeeRobot extends AdvancedRobot {
     public static UIConfiguration conf;
     private int currentPoint = -1;
     private EasyPredictModelWrapper model;
+    private static int count_7 = 0;
+    private static int count_10 = 0;
+    private static int naoDisparei = 0;
 
     @Override
     public void run() {
         super.run();
 
-        //try {
-        //   model = new EasyPredictModelWrapper(MojoModel.load("C:\\Users\\João Moreira\\IdeaProjects\\Bumblebee-AI\\model\\default_random_forest.zip"));
-        //} catch (IOException e) {
-        //     e.printStackTrace();
-        //}
+        try {
+            model = new EasyPredictModelWrapper(MojoModel.load("C:\\Users\\jorge\\IdeaProjects\\Bumblebee-AI\\API\\regression.zip"));
+        } catch (IOException e) {
+            System.out.println(e);
+        }
 
         obstacles = new ArrayList<>();
         inimigos = new HashMap<>();
@@ -109,9 +115,6 @@ public class BumblebeeRobot extends AdvancedRobot {
     public void onScannedRobot(ScannedRobotEvent event) {
         super.onScannedRobot(event);
 
-        //double radarTurn = getHeadingRadians() + event.getBearingRadians()  -getRadarHeadingRadians();
-        //setTurnRadarRightRadians(normalRelativeAngle(radarTurn));
-
         double gunTurn = getHeadingRadians() + event.getBearingRadians() - getRadarHeadingRadians();
         turnGunRight(gunTurn);
 
@@ -122,19 +125,36 @@ public class BumblebeeRobot extends AdvancedRobot {
         rowData.put("heading",event.getHeading());
         rowData.put("moving",this.getDistanceRemaining() > 0 || this.getTurnRemaining() > 0);
 
-        Bullet b = this.fireBullet(3);
-        if (b == null)
-            System.out.println("Não disparei");
-        else {
-            fireData.add(new BulletData(event.getName(), event.getDistance(), event.getBearing(), event.getHeading(),  this.getDistanceRemaining() > 0 || this.getTurnRemaining() > 0));
-            System.out.println(b.getVictim());
-            System.out.println("Disparei ao " + event.getName());
+        double percentage = 0.0;
+        try {
+            RegressionModelPrediction prediction = model.predictRegression(rowData);
+            percentage = prediction.value;
+        } catch (PredictException e) {
+            System.out.println(e);
         }
 
-        try {
-            System.out.println(b.getVelocity() + " velocidade bala");
-        } catch (NullPointerException e) {
+        System.out.println("PERCENTAGEM: " + percentage);
+
+        if(percentage > 0.7){
+            super.fireBullet(10);
+            System.out.println("Disparei com potencia de 10");
+            count_10++;
+        } else if (percentage > 0.5){
+            super.fireBullet(7);
+            System.out.println("Disparei com potencia de 7");
+            count_7++;
+        } else{
+            System.out.println("Não disparei");
+            naoDisparei++;
         }
+
+        //if (b == null)
+        //    System.out.println("Não disparei");
+        //else {
+        //    fireData.add(new BulletData(event.getName(), event.getDistance(), event.getBearing(), event.getHeading(),  this.getDistanceRemaining() > 0 || this.getTurnRemaining() > 0));
+        //    System.out.println(b.getVictim());
+        //    System.out.println("Disparei ao " + event.getName());
+        //}
 
         System.out.println("Enemy spotted: " + event.getName());
 
@@ -236,12 +256,6 @@ public class BumblebeeRobot extends AdvancedRobot {
     @Override
     public void onRoundEnded(RoundEndedEvent event) {
         super.onRoundEnded(event);
-
-        try {
-            this.fireDataToCSV();
-        } catch (IOException e) {
-            System.out.println(e);
-        }
     }
 
     @Override
@@ -254,7 +268,9 @@ public class BumblebeeRobot extends AdvancedRobot {
             System.out.println(e);
         }
 
-        System.out.println(fireData.size() + "LISTA");
+        System.out.println("Disparei 10: " + count_10);
+        System.out.println("Disparei 7: " + count_7);
+        System.out.println("Não disparei: " + naoDisparei);
     }
 
     public void fireDataToCSV() throws IOException {

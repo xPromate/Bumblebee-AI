@@ -5,3 +5,4 @@ gradlew
 gradlew.bat
 gradle/wrapper
 out
+API/h2o.jar
