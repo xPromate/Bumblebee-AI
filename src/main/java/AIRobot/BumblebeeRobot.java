@@ -72,7 +72,6 @@ public class BumblebeeRobot extends AdvancedRobot {
             }
 
             super.scan();
-
             this.execute();
         }
     }
@@ -130,18 +129,14 @@ public class BumblebeeRobot extends AdvancedRobot {
         rowData.put("moving", this.getDistanceRemaining() > 0 || this.getTurnRemaining() > 0);
 
         double predictionValue = 0.0;
-        int label = 0;
 
         try {
             BinomialModelPrediction prediction = model.predictBinomial(rowData);
             System.out.println(Arrays.toString(prediction.classProbabilities));
             predictionValue = prediction.classProbabilities[1];
-
-            label = prediction.labelIndex;
         } catch (PredictException e) {
             System.out.println(e);
         }
-        System.out.println("LABELLLLLLLLL: " + label);
 
         if (predictionValue > 0.54) {
             super.fireBullet(random);
@@ -194,6 +189,15 @@ public class BumblebeeRobot extends AdvancedRobot {
         Rectangle rect = enemies.get(event.getName());
         obstacles.remove(rect);
         enemies.remove(event.getName());
+    }
+
+    @Override
+    public void onHitByBullet(HitByBulletEvent event) {
+        super.onHitByBullet(event);
+
+        double random = this.randomNumber(-100, 100);
+
+        this.setAhead(random);
     }
 
     public static Point2D.Double getEnemyCoordinates(Robot robot, double bearing, double distance) {
