@@ -200,6 +200,35 @@ public class BumblebeeRobot extends AdvancedRobot {
         this.setAhead(random);
     }
 
+    @Override
+    public void onHitWall(HitWallEvent event) {
+        super.onHitWall(event);
+
+        if(super.getX() == 0){
+            super.setAhead(100);
+        }
+        if(super.getX() == conf.getWidth()){
+            super.setBack(100);
+        }
+        if(super.getY() == 0){
+            super.setTurnRight(90);
+            super.setAhead(100);
+        }
+        if(super.getY() == conf.getHeight()){
+            super.setTurnRight(-90);
+            super.setAhead(100);
+        }
+    }
+
+    @Override
+    public void onHitRobot(HitRobotEvent event) {
+        super.onHitRobot(event);
+
+        double random = this.randomNumber(-100, 100);
+
+        this.setAhead(random);
+    }
+
     public static Point2D.Double getEnemyCoordinates(Robot robot, double bearing, double distance) {
         double angle = Math.toRadians((robot.getHeading() + bearing) % 360);
 
