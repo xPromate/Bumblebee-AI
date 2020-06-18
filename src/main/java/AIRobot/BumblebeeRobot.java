@@ -7,7 +7,7 @@ import hex.genmodel.MojoModel;
 import hex.genmodel.easy.EasyPredictModelWrapper;
 import hex.genmodel.easy.RowData;
 import hex.genmodel.easy.exception.PredictException;
-import hex.genmodel.easy.prediction.RegressionModelPrediction;
+import hex.genmodel.easy.prediction.BinomialModelPrediction;
 import impl.Point;
 import impl.UIConfiguration;
 import interf.IPoint;
@@ -21,11 +21,10 @@ import java.awt.geom.Point2D;
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 import java.time.format.DateTimeFormatter;
 import java.time.LocalDateTime;
+import java.util.List;
 
 import static robocode.util.Utils.normalRelativeAngle;
 
@@ -34,26 +33,25 @@ public class BumblebeeRobot extends AdvancedRobot {
     private List<Rectangle> obstacles;
     private List<IPoint> points;
     private static List<BulletData> fireData = new ArrayList<>();
-    private HashMap<String, Rectangle> inimigos;
+    private HashMap<String, Rectangle> enemies;
     public static UIConfiguration conf;
     private int currentPoint = -1;
     private EasyPredictModelWrapper model;
-    private static int count_7 = 0;
-    private static int count_10 = 0;
-    private static int naoDisparei = 0;
+    private static int fired = 0;
+    private static int notFired = 0;
 
     @Override
     public void run() {
         super.run();
 
         try {
-            model = new EasyPredictModelWrapper(MojoModel.load("C:\\Users\\jorge\\IdeaProjects\\Bumblebee-AI\\API\\regression.zip"));
+            model = new EasyPredictModelWrapper(MojoModel.load("C:\\Users\\jorge\\IdeaProjects\\Bumblebee-AI\\API\\tabomenaotaoverfitted.zip"));
         } catch (IOException e) {
             System.out.println(e);
         }
 
         obstacles = new ArrayList<>();
-        inimigos = new HashMap<>();
+        enemies = new HashMap<>();
         conf = new UIConfiguration((int) getBattleFieldWidth(), (int) getBattleFieldHeight(), obstacles);
 
         while (true) {
@@ -73,7 +71,7 @@ public class BumblebeeRobot extends AdvancedRobot {
                 turnGunRight(360);
             }
 
-            scan();
+            super.scan();
 
             this.execute();
         }
@@ -118,43 +116,53 @@ public class BumblebeeRobot extends AdvancedRobot {
         double gunTurn = getHeadingRadians() + event.getBearingRadians() - getRadarHeadingRadians();
         turnGunRight(gunTurn);
 
-        RowData rowData = new RowData();
-        rowData.put("robot_name",event.getName());
-        rowData.put("distance",event.getDistance());
-        rowData.put("bearing",event.getBearing());
-        rowData.put("heading",event.getHeading());
-        rowData.put("moving",this.getDistanceRemaining() > 0 || this.getTurnRemaining() > 0);
+        double random = this.randomNumber(1, 3);
+        Bullet b = this.fireBullet(random);
 
-        double percentage = 0.0;
+        RowData rowData = new RowData();
+        rowData.put("robot_name", event.getName());
+        rowData.put("distance", event.getDistance());
+        rowData.put("bearing", event.getBearing());
+        rowData.put("heading", event.getHeading());
+        rowData.put("bullet_power", random);
+        rowData.put("pos_x", b.getX());
+        rowData.put("pos_y", b.getY());
+        rowData.put("moving", this.getDistanceRemaining() > 0 || this.getTurnRemaining() > 0);
+
+        double predictionValue = 0.0;
+        int label = 0;
+
         try {
-            RegressionModelPrediction prediction = model.predictRegression(rowData);
-            percentage = prediction.value;
+            BinomialModelPrediction prediction = model.predictBinomial(rowData);
+            System.out.println(Arrays.toString(prediction.classProbabilities));
+            predictionValue = prediction.classProbabilities[1];
+
+            label = prediction.labelIndex;
         } catch (PredictException e) {
             System.out.println(e);
         }
+        System.out.println("LABELLLLLLLLL: " + label);
 
-        System.out.println("PERCENTAGEM: " + percentage);
-
-        if(percentage > 0.7){
-            super.fireBullet(10);
-            System.out.println("Disparei com potencia de 10");
-            count_10++;
-        } else if (percentage > 0.5){
-            super.fireBullet(7);
-            System.out.println("Disparei com potencia de 7");
-            count_7++;
-        } else{
+        if (predictionValue > 0.54) {
+            super.fireBullet(random);
+            fired++;
+        } else {
             System.out.println("Não disparei");
-            naoDisparei++;
+            notFired++;
         }
 
-        //if (b == null)
-        //    System.out.println("Não disparei");
-        //else {
-        //    fireData.add(new BulletData(event.getName(), event.getDistance(), event.getBearing(), event.getHeading(),  this.getDistanceRemaining() > 0 || this.getTurnRemaining() > 0));
-        //    System.out.println(b.getVictim());
-        //    System.out.println("Disparei ao " + event.getName());
-        //}
+        /*
+        double random = this.randomNumber(1, 3);
+
+        Bullet b = this.fireBullet(random);
+        if (b == null)
+            System.out.println("Não disparei");
+        else {
+            fireData.add(new BulletData(event.getName(), event.getDistance(), event.getBearing(), random, event.getHeading(), this.getDistanceRemaining() > 0 || this.getTurnRemaining() > 0));
+            System.out.println(b.getVictim());
+            System.out.println("Disparei ao " + event.getName());
+        }
+        */
 
         System.out.println("Enemy spotted: " + event.getName());
 
@@ -164,25 +172,28 @@ public class BumblebeeRobot extends AdvancedRobot {
 
         Rectangle rect = new Rectangle((int) ponto.x, (int) ponto.y, (int) (this.getWidth() * 2.5), (int) (this.getHeight() * 2.5));
 
-        if (inimigos.containsKey(event.getName())) //se já existe um retângulo deste inimigo
-            obstacles.remove(inimigos.get(event.getName()));//remover da lista de retângulos
+        if (enemies.containsKey(event.getName())) //se já existe um retângulo deste inimigo
+            obstacles.remove(enemies.get(event.getName()));//remover da lista de retângulos
 
         obstacles.add(rect);
-        inimigos.put(event.getName(), rect);
+        enemies.put(event.getName(), rect);
 
-        //System.out.println("Enemies at:");
-        //obstacles.forEach(x -> System.out.println(x));
         super.scan();
+    }
+
+    private int randomNumber(int min, int max) {
+        Random rand = new Random();
+
+        return rand.nextInt((max - min) + 1) + min;
     }
 
     @Override
     public void onRobotDeath(RobotDeathEvent event) {
         super.onRobotDeath(event);
 
-        Rectangle rect = inimigos.get(event.getName());
+        Rectangle rect = enemies.get(event.getName());
         obstacles.remove(rect);
-        inimigos.remove(event.getName());
-
+        enemies.remove(event.getName());
     }
 
     public static Point2D.Double getEnemyCoordinates(Robot robot, double bearing, double distance) {
@@ -192,7 +203,6 @@ public class BumblebeeRobot extends AdvancedRobot {
     }
 
     private void drawThickLine(Graphics g, int x1, int y1, int x2, int y2, int thickness, Color c) {
-
         g.setColor(c);
         int dX = x2 - x1;
         int dY = y2 - y1;
@@ -243,6 +253,8 @@ public class BumblebeeRobot extends AdvancedRobot {
     public void onBulletHit(BulletHitEvent event) {
         super.onBulletHit(event);
 
+        fireData.get(fireData.size() - 1).setX(event.getBullet().getX());
+        fireData.get(fireData.size() - 1).setY(event.getBullet().getY());
         fireData.get(fireData.size() - 1).setHit(event.getName().equals(event.getBullet().getVictim()));
     }
 
@@ -250,6 +262,8 @@ public class BumblebeeRobot extends AdvancedRobot {
     public void onBulletMissed(BulletMissedEvent event) {
         super.onBulletMissed(event);
 
+        fireData.get(fireData.size() - 1).setX(event.getBullet().getX());
+        fireData.get(fireData.size() - 1).setY(event.getBullet().getY());
         fireData.get(fireData.size() - 1).setHit(false);
     }
 
@@ -268,13 +282,11 @@ public class BumblebeeRobot extends AdvancedRobot {
             System.out.println(e);
         }
 
-        System.out.println("Disparei 10: " + count_10);
-        System.out.println("Disparei 7: " + count_7);
-        System.out.println("Não disparei: " + naoDisparei);
+        System.out.println("Disparei: " + fired);
+        System.out.println("Não disparei: " + notFired);
     }
 
     public void fireDataToCSV() throws IOException {
-
         DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd-HH-mm-ss");
         LocalDateTime now = LocalDateTime.now();
         String date = dtf.format(now);
@@ -287,7 +299,7 @@ public class BumblebeeRobot extends AdvancedRobot {
 
             CSVWriter csvWriter = new CSVWriter(writer, CSVWriter.DEFAULT_SEPARATOR, CSVWriter.NO_QUOTE_CHARACTER, CSVWriter.DEFAULT_ESCAPE_CHARACTER, CSVWriter.DEFAULT_LINE_END);
 
-            String[] headerRecord = {"robot_name", "distance", "bearing", "heading",  "is_moving", "hit" };
+            String[] headerRecord = {"robot_name", "distance", "bearing", "heading", "pos_x", "pos_y", "bullet_power", "is_moving", "hit"};
 
             csvWriter.writeNext(headerRecord);
 
@@ -297,6 +309,9 @@ public class BumblebeeRobot extends AdvancedRobot {
                         Double.toString(b.getDistance()),
                         Double.toString(b.getBearing()),
                         Double.toString(b.getHeading()),
+                        Double.toString(b.getX()),
+                        Double.toString(b.getY()),
+                        Double.toString(b.getBullet_power()),
                         Boolean.toString(b.isMoving()),
                         Boolean.toString(b.isHit())
                 });

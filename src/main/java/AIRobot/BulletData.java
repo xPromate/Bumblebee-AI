@@ -6,15 +6,19 @@ public class BulletData {
     private double distance;
     private double bearing;
     private double heading;
+    private double bullet_power;
+    private double x;
+    private double y;
     private boolean hit;
     private boolean isMoving;
 
-    public BulletData(String robot_name, double distance, double bearing, double heading, boolean isMoving) {
+    public BulletData(String robot_name, double distance, double bearing, double bullet_power, double heading, boolean isMoving) {
         this.robot_name = robot_name;
         this.distance = distance;
         this.bearing = bearing;
         this.heading = heading;
         this.isMoving = isMoving;
+        this.bullet_power = bullet_power;
     }
 
     public String getRobot_name() {
@@ -43,6 +47,26 @@ public class BulletData {
 
     public void setHit(boolean hit) {
         this.hit = hit;
+    }
+
+    public double getX() {
+        return x;
+    }
+
+    public double getY() {
+        return y;
+    }
+
+    public void setX(double x) {
+        this.x = x;
+    }
+
+    public void setY(double y) {
+        this.y = y;
+    }
+
+    public double getBullet_power() {
+        return bullet_power;
     }
 
     @Override
