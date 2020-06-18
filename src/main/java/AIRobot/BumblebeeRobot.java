@@ -11,6 +11,7 @@ import hex.genmodel.easy.prediction.BinomialModelPrediction;
 import impl.Point;
 import impl.UIConfiguration;
 import interf.IPoint;
+import performance.EvaluateFire;
 import robocode.*;
 import robocode.Robot;
 import utils.Utils;
@@ -30,6 +31,7 @@ import static robocode.util.Utils.normalRelativeAngle;
 
 public class BumblebeeRobot extends AdvancedRobot {
 
+    EvaluateFire ef;
     private List<Rectangle> obstacles;
     private List<IPoint> points;
     private static List<BulletData> fireData = new ArrayList<>();
@@ -43,6 +45,10 @@ public class BumblebeeRobot extends AdvancedRobot {
     @Override
     public void run() {
         super.run();
+
+        super.setAllColors(Color.YELLOW);
+
+        ef = new EvaluateFire("Bumblebee");
 
         try {
             model = new EasyPredictModelWrapper(MojoModel.load("C:\\Users\\jorge\\IdeaProjects\\Bumblebee-AI\\API\\tabomenaotaoverfitted.zip"));
@@ -138,7 +144,7 @@ public class BumblebeeRobot extends AdvancedRobot {
             System.out.println(e);
         }
 
-        if (predictionValue > 0.54) {
+        if (predictionValue > 0.7) {
             super.fireBullet(random);
             fired++;
         } else {
@@ -173,6 +179,8 @@ public class BumblebeeRobot extends AdvancedRobot {
         obstacles.add(rect);
         enemies.put(event.getName(), rect);
 
+        ef.addScanned(event);
+
         super.scan();
     }
 
@@ -204,17 +212,17 @@ public class BumblebeeRobot extends AdvancedRobot {
     public void onHitWall(HitWallEvent event) {
         super.onHitWall(event);
 
-        if(super.getX() == 0){
+        if (super.getX() == 0) {
             super.setAhead(100);
         }
-        if(super.getX() == conf.getWidth()){
+        if (super.getX() == conf.getWidth()) {
             super.setBack(100);
         }
-        if(super.getY() == 0){
+        if (super.getY() == 0) {
             super.setTurnRight(90);
             super.setAhead(100);
         }
-        if(super.getY() == conf.getHeight()){
+        if (super.getY() == conf.getHeight()) {
             super.setTurnRight(-90);
             super.setAhead(100);
         }
@@ -286,6 +294,8 @@ public class BumblebeeRobot extends AdvancedRobot {
     public void onBulletHit(BulletHitEvent event) {
         super.onBulletHit(event);
 
+        ef.addHit(event);
+
         fireData.get(fireData.size() - 1).setX(event.getBullet().getX());
         fireData.get(fireData.size() - 1).setY(event.getBullet().getY());
         fireData.get(fireData.size() - 1).setHit(event.getName().equals(event.getBullet().getVictim()));
@@ -317,6 +327,8 @@ public class BumblebeeRobot extends AdvancedRobot {
 
         System.out.println("Disparei: " + fired);
         System.out.println("Não disparei: " + notFired);
+
+        System.out.println("SUBMETEU: " + ef.submit(event.getResults()));
     }
 
     public void fireDataToCSV() throws IOException {
