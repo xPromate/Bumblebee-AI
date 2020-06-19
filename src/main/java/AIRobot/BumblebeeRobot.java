@@ -144,7 +144,7 @@ public class BumblebeeRobot extends AdvancedRobot {
             System.out.println(e);
         }
 
-        if (predictionValue > 0.7) {
+        if (predictionValue > 0.65) {
             super.fireBullet(random);
             fired++;
         } else {
