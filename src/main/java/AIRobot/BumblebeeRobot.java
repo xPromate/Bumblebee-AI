@@ -51,7 +51,7 @@ public class BumblebeeRobot extends AdvancedRobot {
         ef = new EvaluateFire("Bumblebee");
 
         try {
-            model = new EasyPredictModelWrapper(MojoModel.load("C:\\Users\\jorge\\IdeaProjects\\Bumblebee-AI\\API\\tabomenaotaoverfitted.zip"));
+            model = new EasyPredictModelWrapper(MojoModel.load("C:\\Users\\jorge\\IdeaProjects\\Bumblebee-AI\\API\\deeplearning.zip"));
         } catch (IOException e) {
             System.out.println(e);
         }
@@ -144,7 +144,7 @@ public class BumblebeeRobot extends AdvancedRobot {
             System.out.println(e);
         }
 
-        if (predictionValue > 0.65) {
+        if (predictionValue > 0.7) {
             super.fireBullet(random);
             fired++;
         } else {
